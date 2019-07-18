@@ -14,7 +14,26 @@
     function sendVerificationEmail($email,$token)
     {
         global $mailer;
-        $body='';
+        $body='<!DOCTYPE html>
+        <html lang="en">
+        
+        <head>
+            <meta charset="UTF-8">
+            <title>Verify Email</title>
+        </head>
+        
+        <body>
+            <div class="wrapper">
+                <p>
+                    Thank you for signing up on our website. Please click on the link below to verify your email.
+                </p>
+                <a href="http://localhost/curd/index.php?token='. $token .'">
+                Verify your email address 
+                </a>
+            </div>
+        </body>
+        
+        </html>';
         // Create a message
         $message = (new Swift_Message('Verify your email address'))
         ->setFrom(EMAIL)
