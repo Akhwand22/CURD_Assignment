@@ -1,3 +1,4 @@
+<?php require_once 'controllers/authController.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,13 +20,17 @@
                     <form action="login.php" method="post">
                         <h3 class="text-center">Login</h3>
 
-                        <!-- <div class="alert alert-danger">
-                            <li>username required</li>
-                        </div> -->
+                        <?php if(count($errors) > 0): ?>
+                        <div class="alert alert-danger">
+                            <?php foreach($errors as $error): ?>
+                            <li><?php echo $error; ?></li>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif ; ?>
                         
                         <div class="form group">
-                            <label for="username">Username or Email</label>
-                            <input type="text" name="username" class="form-control form-control-lg">
+                            <label for="user_name">Username or Email</label>
+                            <input type="text" name="user_name" value="<?php echo $user_name; ?>" class="form-control form-control-lg">
                         </div>
 
                         <div class="form group">

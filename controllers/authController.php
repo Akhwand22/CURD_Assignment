@@ -3,6 +3,7 @@
     session_start();
 
     require 'config/db.php';
+    require_once 'emailController.php';
 
     $errors=array();
     $user_name = "";
@@ -71,8 +72,9 @@
                 $_SESSION['last_name'] = $last_name;
                 $_SESSION['email'] = $email;
                 $_SESSION['verified'] = $verified;
-                // $_SESSION['token'] = $token;
-                // $_SESSION['password'] = $password;
+                
+                sendVerificationEmail($email,$token);
+
                 // set flash message
                 $_SESSION['message'] = "You are now logged in!";
                 $_SESSION['alert-class'] = "alert-success";
@@ -85,4 +87,60 @@
 
         }
 
+    }
+
+    // if user click on login button
+
+    if(isset($_POST['login-btn'])){
+            $user_name = $_POST['user_name'];
+            $password = $_POST['password'];
+
+            // validation
+            if(empty($user_name)){
+                $errors['user_name']="Username required";
+            }
+            if(empty($password)){
+                $errors['password']="Password required";
+            }
+
+            if (count($errors)===0) {
+                $sql="SELECT * FROM users WHERE email=? or user_name=? LIMIT 1";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('ss', $user_name, $password);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $user = $result->fetch_assoc();
+                if (password_verify($password,$user['password'])) {
+                    // login success
+                    $_SESSION['user_name'] = $user['user_name'];
+                    $_SESSION['first_name'] = $user['first_name'];
+                    $_SESSION['last_name'] = $user['last_name'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['verified'] = $user['verified'];
+                    // $_SESSION['token'] = $token;
+                    // $_SESSION['password'] = $password;
+                    // set flash message
+                    $_SESSION['message'] = "You are now logged in!";
+                    $_SESSION['alert-class'] = "alert-success";
+                    header('location: index.php');
+                    exit();
+                }else {
+                    $errors['login_fail']="Wrong Credentials";
+                }
+                $stmt->close();
+                }
+            
+    }
+
+    // logout user
+    if (isset($_GET['logout'])) {
+        session_destroy();
+        unset($_SESSION['id']);
+        unset($_SESSION['user_name']);
+        unset($_SESSION['first_name']);
+        unset($_SESSION['last_name']);
+        unset($_SESSION['email']);
+        unset($_SESSION['verified']);
+        header('location:login.php');
+        exit();
     }
