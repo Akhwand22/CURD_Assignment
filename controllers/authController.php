@@ -106,12 +106,13 @@
             if (count($errors)===0) {
                 $sql="SELECT * FROM users WHERE email=? or user_name=? LIMIT 1";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param('ss', $user_name, $password);
+                $stmt->bind_param('ss', $user_name, $user_name);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $user = $result->fetch_assoc();
                 if (password_verify($password,$user['password'])) {
                     // login success
+                    $_SESSION['id']=$user['id'];
                     $_SESSION['user_name'] = $user['user_name'];
                     $_SESSION['first_name'] = $user['first_name'];
                     $_SESSION['last_name'] = $user['last_name'];
@@ -143,4 +144,33 @@
         unset($_SESSION['verified']);
         header('location:login.php');
         exit();
+    }
+
+    // verify user by token
+    function verifyUser($token){
+        global $conn;
+        $sql = "SELECT * FROM users WHERE token='$token' LIMIT 1";
+        $result = mysqli_query($conn,$sql);
+        if (mysqli_num_rows($result)>0) {
+            $user = mysqli_fetch_assoc($result);
+            $update_query = "UPDATE users SET verified = 1 WHERE token = '$token'";
+
+            if (mysqli_query($conn,$update_query)) {
+                // log user in
+                $_SESSION['id'] = $user['id'];
+                $_SESSION['user_name'] = $user['user_name'];
+                $_SESSION['first_name'] = $user['first_name'];
+                $_SESSION['last_name'] = $user['last_name'];
+                $_SESSION['email'] = $user['email'];
+                $_SESSION['verified'] = 1;
+                // set flash message
+                $_SESSION['message'] = "Your email address was successfully verified!";
+                $_SESSION['alert-class'] = "alert-success";
+                header('location: index.php');
+                exit();
+            }
+
+        }else {
+            echo "User not found";
+        }
     }
