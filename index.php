@@ -41,6 +41,8 @@
                     </div>
                     <?php endif; ?>
                     <!-- put your index code here -->
+                    
+                    
                     <h3>Welcome <?php echo $_SESSION['user_name']; ?></h3>
                     <a href="index.php?logout=1" class="logout">Logout</a> 
 
@@ -54,6 +56,9 @@
                     <?php endif; ?>
                     <?php if($_SESSION['verified']): ?>
                         <!-- <button class="btn btn-block btn-lg btn-primary">I am verified!</button> -->
+                        <div class="btn-group float-right mt-2" role="group">
+                        <button class="btn btn-md btn-secondary"><a href="signup.php" class="text-white">Add New</a></button>
+                        </div>
                         <h1 class="text-warning text-center">Users List</h1>
                         <table class="table table-striped table-hover table-bordered">
                             <tr class="bg-dark text-white text-center">
@@ -76,7 +81,7 @@
                                 <td> <?php echo $result['last_name']; ?> </td>
                                 <td> <?php echo $result['email']; ?>  </td>
                                 <td> <button class="btn btn-primary"> <a href="edit.php?id=<?php echo $result['id']; ?>" class="text-white"> Edit </a> </button>
-                                <button class="btn-danger btn"> <a href="delete.php?id=<?php echo $result['id']; ?>" class="text-white"> Delete </a>  </button> </td>
+                                <button name="login-btn" class="btn-danger btn"> <a href="delete.php?id=<?php echo $result['id']; ?>" class="text-white"> Delete </a>  </button> </td>
                             </tr>
                             <?php
                             }

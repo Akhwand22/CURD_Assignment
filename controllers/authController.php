@@ -213,19 +213,4 @@
             }
         }
     }
-    //if Update
-    if(isset($_POST['delete'])){
-        $id1 = $_GET['id'];
-        $update_query = "DELETE FROM `users` WHERE id=$id1";
-        if (mysqli_query($conn,$update_query)) {
-            // set flash message
-            $_SESSION['message'] = "Your Record is deleted successfully";
-            $_SESSION['alert-class'] = "alert-success";
-            header('location: index.php');
-               
-        }else {
-            $_SESSION['message'] =  "Record is not deleted";
-            $_SESSION['alert-class'] = "alert-failed";
-            echo mysqli_error($conn);
-        }
-    }
+    
