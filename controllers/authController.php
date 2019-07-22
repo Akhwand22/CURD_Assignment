@@ -6,6 +6,7 @@
     require_once 'emailController.php';
 
     $errors=array();
+    $id1 ="";
     $user_name = "";
     $first_name = "";
     $last_name = "";
@@ -129,7 +130,7 @@
                     $errors['login_fail']="Wrong Credentials";
                 }
                 $stmt->close();
-                }
+            }
             
     }
 
@@ -172,5 +173,59 @@
 
         }else {
             echo "User not found";
+        }
+    }
+
+    //if Update
+    if(isset($_POST['update'])){
+        $id1 = $_GET['id'];
+        $first_name = $_POST['first_name'];
+        $last_name = $_POST['last_name'];
+        $email = $_POST['email'];
+
+        $emailQuery = "SELECT * FROM users where email=? LIMIT 1";
+        $stmt = $conn->prepare($emailQuery);
+        $stmt->bind_param('s',$email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $userCount = $result->num_rows;
+        $stmt->close();
+
+        if ($userCount>0) {
+            $errors['email']="Email already exists";
+        }
+        else {
+            $update_query = "UPDATE users SET 
+            first_name='$first_name',
+            last_name='$last_name',
+            email='$email'
+            WHERE id=$id1";
+            if (mysqli_query($conn,$update_query)) {
+                // set flash message
+                $_SESSION['message'] = "Your Record updated successfully";
+                $_SESSION['alert-class'] = "alert-success";
+                header('location: index.php');
+                
+            }else {
+                $_SESSION['message'] =  "Record not updated";
+                $_SESSION['alert-class'] = "alert-failed";
+                echo mysqli_error($conn);
+            }
+        }
+    }
+    //if Update
+    if(isset($_POST['delete'])){
+        $id1 = $_GET['id'];
+        $update_query = "DELETE FROM `users` WHERE id=$id1";
+        if (mysqli_query($conn,$update_query)) {
+            // set flash message
+            $_SESSION['message'] = "Your Record is deleted successfully";
+            $_SESSION['alert-class'] = "alert-success";
+            header('location: index.php');
+               
+        }else {
+            $_SESSION['message'] =  "Record is not deleted";
+            $_SESSION['alert-class'] = "alert-failed";
+            echo mysqli_error($conn);
         }
     }
